@@ -1,0 +1,80 @@
+<!DOCTYPE html>
+<!--
+To change this license header, choose License Headers in Project Properties.
+To change this template file, choose Tools | Templates
+and open the template in the editor.
+-->
+<html>
+    <head>
+        <title>Geolocalizacion</title>
+        <meta charset="UTF-8">
+        <meta name="viewport" content="width=device-width, initial-scale=1.0">
+        <script type="text/javascript">
+            //var nombre = "Nidia";
+            function reportaPosicion(posicion){
+                
+                var longitud = posicion.coords.longitude;
+                var latitud = posicion.coords.latitude;
+                var precision = posicion.coords.accuracy;
+                //alert("long: " + longitud + ", lat: " + latitud + ", precision: " + precision);
+                
+                document.getElementById('posicion').innerHTML = "long: " + longitud + ", lat: " + latitud + ", precision: " + precision;
+                
+                var mapCoords = latitud + ", " + longitud;
+                var mapUrl = "https://maps.googleapis.com/maps/api/staticmap?center=" + mapCoords + "&zoom=14&size=400x300&sensor=false";
+                
+                dibujaImagen(mapUrl);
+                    
+                
+        
+                //alert(mapUrl);
+                
+                
+            } 
+            
+            function manejaErrores(error){
+                var mensajes = document.getElementById('mensajes');
+                switch(error.code){
+                    case 0:
+                        mensajes.innerHTML = "Se presentó un error: " + error.message;
+                        break;
+                }
+                
+            }
+            
+            function detectaGPS (){
+                var mensajes = document.getElementById('mensajes');
+                if (navigator.geolocation){
+                    mensajes.innerHTML = 'Hay soporte de geolocalizacion';
+                    navigator.geolocation.getCurrentPosition(reportaPosicion, manejaErrores);    
+                }else{
+                    mensajes.innerHTML = 'No hay soporte de geolocalizacion';
+                }
+            }
+            
+            function dibujaImagen(mapUrl){
+                var canvas = document.getElementById('imagen');
+                var contexto = canvas.getContext('2d');
+                var imagen = new Image();
+                
+                imagen.onload = function(){
+                    contexto.drawImage(imagen, 50, 70);
+                    
+                };
+                imagen.src = mapUrl;
+               
+            }
+            
+            window.addEventListener('load', detectaGPS, true);
+            window.addEventListener('load', dibujaImagen, true);
+        </script>
+    </head>
+    <body>
+        <div id="mensajes"></div>
+        <!--<button onclick="reportaPosicion()">mostrar posicion</button>-->
+        <p id = "posicion">La posicion es: </p>
+        
+        
+        <canvas id="imagen" style="border: 1px solid black; " width="400" height="400"></canvas>
+    </body>
+</html>
